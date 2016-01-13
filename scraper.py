@@ -13,7 +13,7 @@ def run():
     pages = [requests.get(BASE_URL + page_link) for page_link in page_links]
     #[scrape_table(table_page.text) for table_page in pages]
     scrape_table(pages[0].text)
-    with open('result.json', 'w') as f:
+    with open('db.json', 'w') as f:
         json.dump(players, f)
     
 
