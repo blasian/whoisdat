@@ -47,10 +47,10 @@ def addPeople(people, groupName): # addPeople :: JSON -> String -> ()
 def main():
     # Add people to person group
     group = 'mlb'
-    faceClient.personGroup.create(group, group)   
-    addPeople(getJSONfromDB('db.json'), group)
+    #faceClient.personGroup.create(group, group)   
+    #addPeople(getJSONfromDB('db.json'), group)
     print faceClient.person.list(group)
     # Train person group
-    faceClient.personGroup.trainAndPollForCompletion(group)
+    #faceClient.personGroup.trainAndPollForCompletion(group)
 
 main()
