@@ -3,11 +3,15 @@
 2. Train the mlb person group 
 '''
 from projectoxford.Client import Client
+from projectoxford.Person import Person
+from projectoxford.PersonGroup import PersonGroup
 import json
 import time
 
 client = Client()
 faceClient = client.face('9defe6b7bd8045eea6cccb8e4b8d5ddd')
+personClient = Person('9defe6b7bd8045eea6cccb8e4b8d5ddd') 
+
 
 def getJSONfromDB(path): # readDB :: String -> JSON
     ''' Gets the JSON from the file at the inputted path and returns it as a string'''
@@ -24,6 +28,7 @@ def addPerson(name, url, personGroup): # addPerson :: String -> String -> String
     ''' Creates a person based in an inputted name and image url before adding it to the inputted personGroup in Project Oxford's API'''
     # Detect face from image
     result = faceClient.detect({'url': url})
+    print result
     faceId = result[0]['faceId']
     print result
     # Create person
@@ -42,10 +47,13 @@ def addPeople(people, groupName): # addPeople :: JSON -> String -> ()
 
 def main():
     # Add people to person group
-    group = 'example-person-group'
-    # addPeople(getJSONfromDB('db.json'), group)
-    addPerson("Fernando Abad", "http://mlb.mlb.com/mlb/images/players/head_shot/472551.jpg", group)
+
+    group = 'mlb'
+    #faceClient.personGroup.create(group, group)   
+    #addPeople(getJSONfromDB('db.json'), group)
+    print faceClient.person.list(group)
+
     # Train person group
-    faceClient.personGroup.trainAndPollForCompletion(group)
+    #faceClient.personGroup.trainAndPollForCompletion(group)
 
 main()
