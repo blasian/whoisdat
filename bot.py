@@ -24,7 +24,7 @@ faceClient = client.face(sys.argv[1]) # The API key is retrieved from the first 
 def getAppropriateComment(result): # JSON -> JSON
     # Name, debut date, draft date, position
     if result[0]['candidates'] == []:
-        return "I couldn't figure out who this is. Sorry!"
+        comment = "I couldn't figure out who this is. Sorry!"
     else:
         conf = result[0]['candidates'][0]['confidence']
         person = faceClient.person.get('mlb', result[0]['candidates'][0]['personId'])
@@ -39,13 +39,13 @@ def fixImgurUrl(url): # String -> String
     if re.search("\.jpg|png|bmp|gif", url):
         return url
     # Else fix it so that it points to in image
-    url.replace('://', '://i.') + ".jpg"
+    return url.replace('://', '://i.') + ".jpg"
     
 def makeComment(post, requestComment, commentToPost):
     ### LOG
     print "makeComment"
     
-    # For now, just comment on the post
+    # Reply to the post
     requestComment.reply(commentToPost)
 
 def getResponseFromPost(post): # Submission -> Praw Object -> JSON
@@ -55,7 +55,9 @@ def getResponseFromPost(post): # Submission -> Praw Object -> JSON
     # Get the appropriate url
     url = r.get_submission(post.permalink).url
     # Fix imgur links
+    print url
     fixed_url = fixImgurUrl(url)
+    print fixed_url
     # Detect face from image
     inputFace = faceClient.detect({'url': (fixed_url)})
     faceId = inputFace[0]['faceId']

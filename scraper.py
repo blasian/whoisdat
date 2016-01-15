@@ -4,17 +4,25 @@ import json
 
 BASE_URL  = "http://www.foxsports.com"
 TABLE_URL = "/mlb/players?season=2016&page=%d&position=0"
+PAGE_COUNT = 56
 players = []
 
 def run():
-    # start on page 26
-    for x in range(26, 56):
+    for x in range(1, PAGE_COUNT+1):
         r = requests.get(BASE_URL + TABLE_URL % x)
         soup = BeautifulSoup(r.text, 'html.parser')
         player_table = soup.find('table', class_='wisfb_standard')
         scrape_table(player_table)
-        with open('db.json', 'w') as f:
-            json.dump(players, f)
+        with open('db4.json', 'a') as f:
+            s = ""
+            if x == 0:
+                s = json.dumps(players).replace(']', ',')
+            elif x == PAGE_COUNT:
+                s = json.dumps(players).replace('[', '')
+            else:
+                s = json.dumps(players).replace('[', '').replace(']', ',')
+            f.write(s)
+            print "Appended page " + str(x)
 
 def scrape_table(player_table):
     player_rows  = player_table.find_all('tr')
