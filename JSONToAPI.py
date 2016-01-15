@@ -25,6 +25,7 @@ def addPerson(name, url, personGroup): # addPerson :: String -> String -> String
     # Detect face from image
     result = faceClient.detect({'url': url})
     faceId = result[0]['faceId']
+    print result
     # Create person
     faceClient.person.createOrUpdate(personGroup, [faceId], name)
     
@@ -33,7 +34,7 @@ def addPeople(people, groupName): # addPeople :: JSON -> String -> ()
     # Iterate through the person Dictionary
     for person in people:
         # Add this specific person to personGroup
-        addPerson(person['name'], person['url'], groupName)
+        addPerson(person['name'], person['image_url'], groupName)
         # Log addition of person
         print (person['name'] + ' was added to the ' + groupName + ' personGroup')
         # Wait 3 seconds in between each person to avoid throttling
@@ -42,7 +43,8 @@ def addPeople(people, groupName): # addPeople :: JSON -> String -> ()
 def main():
     # Add people to person group
     group = 'example-person-group'
-    addPeople(getJSONfromDB('db.json'), group)
+    # addPeople(getJSONfromDB('db.json'), group)
+    addPerson("Fernando Abad", "http://mlb.mlb.com/mlb/images/players/head_shot/472551.jpg", group)
     # Train person group
     faceClient.personGroup.trainAndPollForCompletion(group)
 
