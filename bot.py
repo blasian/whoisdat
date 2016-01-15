@@ -17,14 +17,15 @@ subreddit = r.get_subreddit('whoisdat')
 submissions = []
 
 def constructComment(result):
+    comment = ""
     if result[0]['candidates'] == []:
-        return "I couldn't figure out who this is. Sorry!"
+        comment = "I couldn't figure out who this is. Sorry!"
     else:
         conf = result[0]['candidates'][0]['confidence']
         person = faceClient.person.get('mlb', result[0]['candidates'][0]['personId'])
         comment = "I'm " + str(conf * 100) + "% certain that this is " + person['name']
-        print comment
-        return comment
+    print comment
+    return comment
 
 while True:
     posts = subreddit.get_new(limit=10)
@@ -41,4 +42,3 @@ while True:
             # Post a comment with who was identified 
             submission.add_comment(constructComment(result))
             submissions.append(submission)
-            time.sleep(10)
