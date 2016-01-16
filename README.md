@@ -9,6 +9,7 @@ Reddit user wanting to identify an athlete in an image
 Scan posts from subreddit with PRAW -> Give image to Project Oxford Face API -> Post comment response from Project Oxford using PRAW 
 ###Issues:
 1. Only works with imgur links (some older imgur links will not work)
+
 ###Scope limitations:
 1. Will only identify MLB players -> Resulting from requirement to populate Project Oxford with every face
 ###Instructions to run:
