@@ -7,41 +7,54 @@ import time
 import sys
 import re
 
+##### userName and subreddit must be configured in order for the bot to run
+
 # This is the user running the bot
 userName = 'jpatomic96'
 
-# This will hold all submissions that have been dealt with
-submissions = [] # Grrrr i don't like global variables
+# Define subreddit to troll
+sub = 'whoisdat'
+
+#####
+
+
 # Define user agent
-user_agent = 'User-Agent: windows:Who_is_that:v0.0.1 (by /u/' + userName + ')'
+user_agent = 'User-Agent: windows:WhoDat:v0.0.1 (by /u/' + userName + ')'
 # Create initial praw object
 r = praw.Reddit(user_agent)
+subreddit = r.get_subreddit('whoisdat')
 # Configure Project Oxford API
 client = Client()
 faceClient = client.face(sys.argv[1]) # The API key is retrieved from the first command line argument
-
+# This will hold all submissions that have been dealt with
+submissions = []
 
 def getAppropriateComment(result): # JSON -> JSON
+    ''' Returns the appropriate comment to post given a result from Project Oxford'''
     # Name, debut date, draft date, position
+    print "response \n\n"
+    print result
     if result[0]['candidates'] == []:
         comment = "I couldn't figure out who this is. Sorry!"
+        return comment
     else:
         conf = result[0]['candidates'][0]['confidence']
         person = faceClient.person.get('mlb', result[0]['candidates'][0]['personId'])
         identitySentence = "**WhoDatBot:**\nI'm " + str(conf * 100) + "% certain that this is " + person['name'] + "."
-        playerDescriptionSentence = person['name'] + " was drafted on " + draftDate + " as a " + position + "." + "He started playing on" + debutDate + "."
+      #  playerDescriptionSentence = person['name'] + " was drafted to "  + data['team'] + "in " + data['draft_year'] + " as a " + data['position'] +  "."
         botInfoSentence = "I'm a bot who will identify players when you call me! Click [here](https://github.com/blasian/whoisdat) to see my code!"
-        return (identitySentence + "\n\n" + playerDescriptionSentence + "\n\n" + botInfoSentence + "\n\n")
-
+        return (identitySentence + "\n\n\n" + botInfoSentence + "\n\n")
 
 def fixImgurUrl(url): # String -> String
+    ''' Fixes imgur urls so that they point directly to the image rather than the post'''
     # If the url already points to an image, don't fix it
     if re.search("\.jpg|png|bmp|gif", url):
         return url
     # Else fix it so that it points to in image
     return url.replace('://', '://i.') + ".jpg"
     
-def makeComment(post, requestComment, commentToPost):
+def makeComment(requestComment, commentToPost):
+    ''' Responds to the comment requesting WhoDatBot with commentToPost'''
     ### LOG
     print "makeComment"
     
@@ -55,9 +68,7 @@ def getResponseFromPost(post): # Submission -> Praw Object -> JSON
     # Get the appropriate url
     url = r.get_submission(post.permalink).url
     # Fix imgur links
-    print url
     fixed_url = fixImgurUrl(url)
-    print fixed_url
     # Detect face from image
     inputFace = faceClient.detect({'url': (fixed_url)})
     faceId = inputFace[0]['faceId']
@@ -89,12 +100,12 @@ def respondToComments(subreddit): # Some praw object -> Some other praw object -
             # For each comment in remaining posts
             for comment in post.comments:
                 # If comment contain's "who dat" and has not already been replied to
-                if "who dat" in comment.body:# and not hasReplied(comment):
+                if "who dat" in comment.body and not hasReplied(comment):
                     # Identify person
                     response = getResponseFromPost(post)
                     print response
                     # Respond to comment with response
-                   # makeComment(post, comment, getAppropriateComment(response))
+                    makeComment(comment, getAppropriateComment(response))
                     # Add submission to higher scoped submissions list
                     submissions.append(post)
                 
@@ -107,35 +118,18 @@ def isImgur(post): # Some praw object -> Submission -> Bool
         
  
 def runBot(): # ()
+    ''' Runs WhoDatBot'''
     ### LOG
     print "runBot"
     
     # Login to reddit
     r.login()
-    # Define subreddit to troll
-    subreddit = r.get_subreddit('whoisdat')
     
     # This is the main loop
     while True:
         respondToComments(subreddit)
         print "Done responding"
-        time.sleep(10)
+        # Runs every minute
+        time.sleep(60)
         
 runBot()
-             
-# while True:
-#     posts = subreddit.get_new(limit=10)
-#     for submission in posts:
-#         if submission not in submissions:
-#             # Analyze the face from the url
-#             url = r.get_submission(submission.permalink).url
-#             url = url.replace('://', '://i.') + ".jpg"
-#             print url
-#             # Detect face from image
-#             inputFace = faceClient.detect({'url': (url)})
-#             faceId = inputFace[0]['faceId']
-#             result = faceClient.identify('mlb', [faceId])
-#             # Post a comment with who was identified 
-#             submission.add_comment(getAppropriateComment(result))
-#             submissions.append(submission)
-#             time.sleep(10)
