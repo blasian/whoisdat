@@ -15,5 +15,5 @@ Scan posts from subreddit with PRAW -> Give image to Project Oxford Face API -> 
 
 ###Instructions to run:
 1. Configure userName and sub variables at the top of bot.py
-2. Train ProjectOxford with people
-3. Run this python file with a Project Oxford Face API key as a command line argument
+2. Train ProjectOxford with people using JSONToAPI.py
+3. Run bot.py python file with a Project Oxford Face API key as a command line argument
