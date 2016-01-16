@@ -12,6 +12,7 @@ Scan posts from subreddit with PRAW -> Give image to Project Oxford Face API -> 
 
 ###Scope limitations:
 1. Will only identify MLB players -> Resulting from requirement to populate Project Oxford with every face
+
 ###Instructions to run:
 1. Configure userName and sub variables at the top of bot.py
 2. Train ProjectOxford with people
